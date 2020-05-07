@@ -1,0 +1,16 @@
+*.o
+Makefile
+config.h
+config.log
+config.status
+lib/dummy
+popt/dummy
+rounding.h
+rsync
+rsync-ssl
+shconfig
+stunnel-rsync
+stunnel-rsyncd.conf
+zlib/dummy
+zlib/*.o
+
