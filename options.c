@@ -51,6 +51,7 @@ int keep_dirlinks = 0;
 int copy_dirlinks = 0;
 int copy_links = 0;
 int do_fsync = 0;
+int f2fs_trans = 0;
 int preserve_links = 0;
 int preserve_hard_links = 0;
 int preserve_acls = 0;
@@ -750,6 +751,7 @@ void usage(enum logcode F)
   rprintf(F,"     --delay-updates         put all updated files into place at transfer's end\n");
   rprintf(F," -m, --prune-empty-dirs      prune empty directory chains from the file-list\n");
   rprintf(F,"     --fsync                 fsync every written file\n");
+  rprintf(F,"     --f2fsTrans             use f2fs transaction for every file write\n");
   rprintf(F,"     --numeric-ids           don't map uid/gid values by user/group name\n");
   rprintf(F,"     --usermap=STRING        custom username mapping\n");
   rprintf(F,"     --groupmap=STRING       custom groupname mapping\n");
@@ -1020,6 +1022,7 @@ static struct poptOption long_options[] = {
   {"contimeout",       0,  POPT_ARG_INT,    &connect_timeout, 0, 0, 0 },
   {"no-contimeout",    0,  POPT_ARG_VAL,    &connect_timeout, 0, 0, 0 },
   {"fsync",            0,  POPT_ARG_NONE,   &do_fsync, 0, 0, 0 },
+  {"f2fsTrans",        0,  POPT_ARG_NONE,   &f2fs_trans, 0, 0, 0 },
   {"rsh",             'e', POPT_ARG_STRING, &shell_cmd, 0, 0, 0 },
   {"rsync-path",       0,  POPT_ARG_STRING, &rsync_path, 0, 0, 0 },
   {"temp-dir",        'T', POPT_ARG_STRING, &tmpdir, 0, 0, 0 },
@@ -2751,6 +2754,8 @@ void server_options(char **args, int *argc_p)
 
 		if (do_fsync)
 			args[ac++] = "--fsync";
+		if (f2fs_trans)
+			args[ac++] = "--f2fsTrans";
 
 		if (basis_dir[0]) {
 			/* the server only needs this option if it is not the sender,

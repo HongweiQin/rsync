@@ -41,6 +41,7 @@ extern int preserve_hard_links;
 extern int preserve_perms;
 extern int preserve_xattrs;
 extern int do_fsync;
+extern int f2fs_trans;
 extern int basis_dir_cnt;
 extern int make_backups;
 extern int cleanup_got_literal;
@@ -245,6 +246,12 @@ static int receive_data(int f_in, char *fname_r, int fd_r, OFF_T size_r,
 	int32 i;
 	char *map = NULL;
 
+	if (f2fs_trans && fd != -1 && ioctl(fd, F2FS_IOC_START_ATOMIC_WRITE) != 0) {
+		rsyserr(FERROR, errno, "f2fs start transaction failed on %s",
+			full_fname(fname));
+		exit_cleanup(RERR_FILEIO);
+	}
+
 #ifdef SUPPORT_PREALLOCATION
 	if (preallocate_files && fd != -1 && total_size > 0 && (!inplace || total_size > size_r)) {
 		/* Try to preallocate enough space for file's eventual length.  Can
@@ -390,6 +397,12 @@ static int receive_data(int f_in, char *fname_r, int fd_r, OFF_T size_r,
 		end_progress(total_size);
 
 	sum_len = sum_end(file_sum1);
+
+	if (f2fs_trans && fd != -1 && ioctl(fd, F2FS_IOC_COMMIT_ATOMIC_WRITE) != 0) {
+		rsyserr(FERROR, errno, "f2fs commit transaction failed on %s",
+			full_fname(fname));
+		exit_cleanup(RERR_FILEIO);
+	}
 
 	if (do_fsync && fd != -1 && fsync(fd) != 0) {
 		rsyserr(FERROR, errno, "fsync failed on %s",

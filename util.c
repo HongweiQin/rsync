@@ -28,6 +28,7 @@
 extern int dry_run;
 extern int module_id;
 extern int do_fsync;
+extern int f2fs_trans;
 extern int protect_args;
 extern int modify_window;
 extern int relative_paths;

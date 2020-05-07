@@ -21,6 +21,10 @@
 #define False 0
 #define True 1
 
+#define F2FS_IOCTL_MAGIC        0xf5
+#define F2FS_IOC_START_ATOMIC_WRITE     _IO(F2FS_IOCTL_MAGIC, 1)
+#define F2FS_IOC_COMMIT_ATOMIC_WRITE    _IO(F2FS_IOCTL_MAGIC, 2)
+
 #define BLOCK_SIZE 700
 #define RSYNC_RSH_ENV "RSYNC_RSH"
 #define RSYNC_RSH_IO_ENV "RSYNC_RSH_IO"
