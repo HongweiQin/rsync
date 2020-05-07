@@ -40,6 +40,7 @@ extern int relative_paths;
 extern int preserve_hard_links;
 extern int preserve_perms;
 extern int preserve_xattrs;
+extern int do_fsync;
 extern int basis_dir_cnt;
 extern int make_backups;
 extern int cleanup_got_literal;
@@ -389,6 +390,12 @@ static int receive_data(int f_in, char *fname_r, int fd_r, OFF_T size_r,
 		end_progress(total_size);
 
 	sum_len = sum_end(file_sum1);
+
+	if (do_fsync && fd != -1 && fsync(fd) != 0) {
+		rsyserr(FERROR, errno, "fsync failed on %s",
+			full_fname(fname));
+		exit_cleanup(RERR_FILEIO);
+	}
 
 	if (mapbuf)
 		unmap_file(mapbuf);

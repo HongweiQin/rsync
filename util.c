@@ -27,6 +27,7 @@
 
 extern int dry_run;
 extern int module_id;
+extern int do_fsync;
 extern int protect_args;
 extern int modify_window;
 extern int relative_paths;
@@ -412,6 +413,13 @@ int copy_file(const char *source, const char *dest, int ofd, mode_t mode)
 		/* If we fail to truncate, the dest file may be wrong, so we
 		 * must trigger the "partial transfer" error. */
 		rsyserr(FERROR_XFER, errno, "ftruncate %s", full_fname(dest));
+	}
+
+	if (do_fsync && fsync(ofd) < 0) {
+		rsyserr(FERROR, errno, "fsync failed on %s",
+			full_fname(dest));
+		close(ofd);
+		return -1;
 	}
 
 	if (close(ofd) < 0) {
